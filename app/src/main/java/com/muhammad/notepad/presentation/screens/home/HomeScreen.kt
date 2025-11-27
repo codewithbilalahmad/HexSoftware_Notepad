@@ -99,6 +99,9 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                         NoteCard(note = note, onEditNote = { id , title ->
                             viewModel.onAction(HomeAction.OnUpdateClick(id = id, title = title))
                         }, onDeleteNote = { id ->
+                            viewModel.onAction(HomeAction.OnDeleteNote(id))
+
+                        }, onDeleteClick = {id ->
                             viewModel.onAction(HomeAction.OnDeleteClick(id))
                         }, onToggleCompleted = { id, completed ->
                             viewModel.onAction(HomeAction.OnToggleNoteCompleted(id, completed))
@@ -142,7 +145,7 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                 viewModel.onAction(HomeAction.OnDismissNoteDeleteDialog)
             },
             onConfirmClick = {
-                viewModel.onAction(HomeAction.OnDeleteNote)
+                viewModel.onAction(HomeAction.OnDeleteNote())
             },
             title = stringResource(R.string.delete_note),
             message = stringResource(R.string.delete_note_description),

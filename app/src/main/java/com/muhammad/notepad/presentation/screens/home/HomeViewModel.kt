@@ -30,7 +30,7 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.OnCreateNote -> onCreateNote()
-             HomeAction.OnDeleteNote -> onDeleteNote()
+            is  HomeAction.OnDeleteNote -> onDeleteNote(action.id)
             is HomeAction.OnToggleNoteCompleted -> onToggleNoteCompleted(
                 id = action.id,
                 completed = action.isCompleted
@@ -82,10 +82,15 @@ class HomeViewModel(
     }
 
 
-    private fun onDeleteNote() {
+    private fun onDeleteNote(id : Long?) {
         viewModelScope.launch {
+            if(id != null){
+                _state.update { it.copy(selectedNoteId = id) }
+            }
             noteRepository.deleteNote(id = state.value.selectedNoteId ?: return@launch)
-            onAction(HomeAction.OnDismissNoteDeleteDialog)
+            if(id == null){
+                onAction(HomeAction.OnDismissNoteDeleteDialog)
+            }
         }
     }
 

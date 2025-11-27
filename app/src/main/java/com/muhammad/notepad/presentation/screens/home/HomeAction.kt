@@ -5,7 +5,7 @@ sealed interface HomeAction {
     data object OnCreateNote : HomeAction
     data class OnNoteQueryChange(val text : String) : HomeAction
     data class OnNoteTitleChange(val text : String) : HomeAction
-    data object OnDeleteNote : HomeAction
+    data class OnDeleteNote(val id : Long?=null) : HomeAction
     data class OnUpdateClick(val id : Long,val title : String) : HomeAction
     data class OnDeleteClick(val id : Long) : HomeAction
     data object OnDismissNoteUpdateDialog : HomeAction

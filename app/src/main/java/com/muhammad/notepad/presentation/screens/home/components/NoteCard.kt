@@ -47,6 +47,7 @@ fun NoteCard(
     modifier: Modifier = Modifier,
     note: Note,
     onToggleCompleted: (id: Long, Boolean) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     onDeleteNote: (Long) -> Unit,
     onEditNote: (Long, String) -> Unit,
 ) {
@@ -146,7 +147,7 @@ fun NoteCard(
                             }
                             IconButton(
                                 onClick = {
-                                    onDeleteNote(note.id ?: 0L)
+                                    onDeleteClick(note.id ?: 0L)
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.error,
