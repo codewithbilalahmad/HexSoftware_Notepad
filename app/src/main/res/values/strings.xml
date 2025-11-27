@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Notepad</string>
+    <string name="today_task">Today\'s Tasks</string>
+    <string name="completed">Completed</string>
+    <string name="whats_doing">What are you doing today ?</string>
+    <string name="no_notes_found">No Notes found!</string>
+    <string name="edit_note">Edit Note</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete_note">Delete Note</string>
+    <string name="delete_note_description">Are you sure you want to delete this note? Once deleted, it cannot be recovered.</string>
+</resources>
