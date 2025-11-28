@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muhammad.notepad.domain.model.Note
 import com.muhammad.notepad.domain.repository.NoteRepository
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -16,6 +18,8 @@ class HomeViewModel(
     private val noteRepository: NoteRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
+    private val _events = Channel<HomeEvent>()
+    val events = _events.receiveAsFlow()
     val state = combine(
         _state, noteRepository.getCompletedNoteCount(), noteRepository.getNotes()
     ) { state, completedNotes, notes ->
@@ -102,6 +106,7 @@ class HomeViewModel(
                 completed = false, createdAt = System.currentTimeMillis()
             )
             noteRepository.insertNote(note)
+            _events.trySend(HomeEvent.ScrollToTop)
             _state.update {
                 it.copy(noteQuery = "")
             }

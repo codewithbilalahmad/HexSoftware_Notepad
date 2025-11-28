@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -19,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,12 +34,25 @@ import com.muhammad.notepad.presentation.screens.home.components.AddNoteSection
 import com.muhammad.notepad.presentation.components.AppAlertDialog
 import com.muhammad.notepad.presentation.screens.home.components.HomeTasksHeader
 import com.muhammad.notepad.presentation.screens.home.components.NoteCard
+import com.muhammad.notepad.utils.ObserveAsEvents
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    ObserveAsEvents(viewModel.events) {event ->
+        when(event){
+            HomeEvent.ScrollToTop -> {
+                scope.launch {
+                    listState.animateScrollToItem(0)
+                }
+            }
+        }
+    }
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         Column(
             modifier = Modifier
@@ -92,7 +107,7 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 8.dp, horizontal = 16.dp),
-                    contentPadding = paddingValues,
+                    contentPadding = paddingValues, state = listState,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(state.notes, key = { it.id ?: 0L }) { note ->
@@ -100,7 +115,6 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                             viewModel.onAction(HomeAction.OnUpdateClick(id = id, title = title))
                         }, onDeleteNote = { id ->
                             viewModel.onAction(HomeAction.OnDeleteNote(id))
-
                         }, onDeleteClick = {id ->
                             viewModel.onAction(HomeAction.OnDeleteClick(id))
                         }, onToggleCompleted = { id, completed ->
@@ -130,7 +144,7 @@ fun HomeScreen(viewModel: HomeViewModel = koinViewModel()) {
                     viewModel.onAction(HomeAction.OnNoteTitleChange(newValue))
                 }, hint = R.string.whats_doing, onKeyBoardAction = {
                     viewModel.onAction(HomeAction.OnUpdateNote)
-                }, modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp))
+                }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             },
             dismissText = stringResource(R.string.cancel),
             confirmText = stringResource(R.string.confirm)
